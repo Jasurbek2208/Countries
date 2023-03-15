@@ -11,6 +11,7 @@ import { Root, Root2 } from "../types/interface";
 
 export default function Home() {
   const regions:Array<String> = ["All", "Africa", "Americas", "Asia", "Europe", "Oceania"];
+  const [searchValue, setSearchValue] = useState<String>("");
 
   const [countries, setCountries] = useState<Root | null>(null);
   const [filteredCountries, setFilteredCountries] = useState<Root | null>(null);
@@ -18,7 +19,6 @@ export default function Home() {
   // errors 
   const [error, setError] = useState<Boolean>(false);
   const [isLoading, setIsLoading] = useState<Boolean>(false);
-// console.log(countries[0].name.common);
 
   // Get All countries
   async function getApi() {
@@ -42,14 +42,18 @@ export default function Home() {
   async function getRegionCountries(e: React.ChangeEvent<HTMLSelectElement>) {
     if (e.target.value === "All") {
       getApi();
+      searchCountries(searchValue);
       return;
     }
     setIsLoading(true);
 
     try {
       const res = await myAxios(`/region/${e.target.value}`);
+      setCountries(res.data);
       setFilteredCountries(res.data);
       setError(false);
+
+      searchCountries(searchValue);
 
     } catch {
       setError(true);
@@ -60,8 +64,10 @@ export default function Home() {
   }
 
   // Search countries
-  function searchCountries(e: React.ChangeEvent<HTMLInputElement>) {
-    let searchedValue = e.target.value.toLowerCase();
+  function searchCountries(e: String) {
+    setSearchValue(e);
+
+    let searchedValue: String = e.toLowerCase();
     let count:any = [];
 
     if (searchedValue) {
@@ -96,7 +102,7 @@ export default function Home() {
             <input
               type="text"
               placeholder="Search..."
-              onChange={searchCountries}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => searchCountries(e.target.value)}
               className="max-w-[340px] w-full px-4 py-3 text-base bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             />
             <select
