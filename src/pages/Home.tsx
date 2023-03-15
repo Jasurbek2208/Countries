@@ -7,7 +7,7 @@ import LoadingSpinner from "../components/loading/Loading";
 
 // Custom Hooks
 import { usenumbersort } from "../customHooks/NumberSort";
-import { Root } from "../types/interface";
+import { Root, Root2 } from "../types/interface";
 
 export default function Home() {
   const regions:Array<String> = ["All", "Africa", "Americas", "Asia", "Europe", "Oceania"];
@@ -41,10 +41,7 @@ export default function Home() {
   // Get region countries
   async function getRegionCountries(e: React.ChangeEvent<HTMLSelectElement>) {
     if (e.target.value === "All") {
-
-      if (!countries) setError(true);
-      setFilteredCountries(countries);
-
+      getApi();
       return;
     }
     setIsLoading(true);
@@ -68,7 +65,7 @@ export default function Home() {
     let count:any = [];
 
     if (searchedValue) {
-      countries?.map((country) => {
+      filteredCountries?.map((country: Root2) => {
 
         if (country.name.common.toLowerCase().includes(searchedValue)) {
           count.push(country);
