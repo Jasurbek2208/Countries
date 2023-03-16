@@ -9,7 +9,7 @@ import LoadingSpinner from "../components/loading/Loading";
 import { usenumbersort } from "../customHooks/NumberSort";
 import { Root, Root2 } from "../types/interface";
 
-export default function Home() {
+export default function Home({ setCurrentCountry }:any) {
   const regions: Array<String> = [
     "All",
     "Africa",
@@ -168,7 +168,7 @@ export default function Home() {
                         {usenumbersort(country.population)}
                       </span>
                     </p>
-                    <MyButton />
+                    <MyButton current={country} onClick={() => setCurrentCountry(country)}>View more</MyButton>
                   </div>
                 </div>
               </div>

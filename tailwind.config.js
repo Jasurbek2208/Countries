@@ -28,7 +28,7 @@ module.exports = {
       gradientColorStops: ['hover', 'focus'],
       zIndex: ['hover', 'active'],
       scale: ['hover', 'active'],
-      rotate: ['hover', 'active'],
+      rotate: ['hover', 'active'], // enable hover and active variants for rotation values
       translate: ['hover', 'active'],
       skew: ['hover', 'active'],
       transitionProperty: ['hover', 'focus'],
