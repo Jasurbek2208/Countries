@@ -10,13 +10,20 @@ import { usenumbersort } from "../customHooks/NumberSort";
 import { Root, Root2 } from "../types/interface";
 
 export default function Home() {
-  const regions:Array<String> = ["All", "Africa", "Americas", "Asia", "Europe", "Oceania"];
-  const [searchValue, setSearchValue] = useState<String>("");
+  const regions: Array<String> = [
+    "All",
+    "Africa",
+    "Americas",
+    "Asia",
+    "Europe",
+    "Oceania",
+  ];
+  const [searchValue, setSearchValue] = useState<string>("");
 
   const [countries, setCountries] = useState<Root | null>(null);
   const [filteredCountries, setFilteredCountries] = useState<Root | null>(null);
 
-  // errors 
+  // errors
   const [error, setError] = useState<Boolean>(false);
   const [isLoading, setIsLoading] = useState<Boolean>(false);
 
@@ -26,10 +33,11 @@ export default function Home() {
 
     try {
       const res = await myAxios("/all");
+
       setCountries(res.data);
       setFilteredCountries(res.data);
       setError(false);
-      
+
     } catch {
       setError(true);
 
@@ -42,42 +50,51 @@ export default function Home() {
   async function getRegionCountries(e: React.ChangeEvent<HTMLSelectElement>) {
     if (e.target.value === "All") {
       getApi();
-      searchCountries(searchValue);
       return;
     }
     setIsLoading(true);
 
     try {
       const res = await myAxios(`/region/${e.target.value}`);
-      setCountries(res.data);
+      
       setFilteredCountries(res.data);
+      setCountries(res.data);
       setError(false);
-
-      searchCountries(searchValue);
 
     } catch {
       setError(true);
+      setCountries(null);
+      setFilteredCountries(null);
 
     } finally {
       setIsLoading(false);
     }
   }
 
+  // watching countries filter
+  useEffect(() => {
+    if (searchValue) {
+      searchCountries(searchValue);
+    }
+  }, [countries]);
+
   // Search countries
-  function searchCountries(e: String) {
+  function searchCountries(e: string) {
     setSearchValue(e);
 
-    let searchedValue: String = e.toLowerCase();
-    let count:any = [];
+    let searchedValue: string = e.toLowerCase();
+    let count: any = [];
 
     if (searchedValue) {
-      filteredCountries?.map((country: Root2) => {
+
+      countries?.map((country: Root2) => {
 
         if (country.name.common.toLowerCase().includes(searchedValue)) {
           count.push(country);
         }
 
       });
+
     } else {
       count = countries;
     }
@@ -102,7 +119,9 @@ export default function Home() {
             <input
               type="text"
               placeholder="Search..."
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => searchCountries(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                searchCountries(e.target.value)
+              }
               className="max-w-[340px] w-full px-4 py-3 text-base bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             />
             <select
@@ -121,12 +140,12 @@ export default function Home() {
 
         {filteredCountries && (
           <div className="flex items-center justify-around gap-10 flex-wrap">
-            {filteredCountries?.map((country:any) => (
+            {filteredCountries?.map((country: any) => (
               <div key={country.name.common} className="flex justify-center">
                 <div className="block max-w-[300px] w-[300px] rounded-lg bg-white shadow-lg dark:bg-neutral-700">
                   <a href="#!">
                     <img
-                      className="rounded-t-lg w-full max-h-[200px] h-[200px]"
+                      className="rounded-t-lg w-full max-h-[200px] h-[200px] border-b-[1px] border-b-[#262626]"
                       src={country.flags.png}
                       alt={country.flags.alt}
                     />
@@ -156,13 +175,24 @@ export default function Home() {
             ))}
           </div>
         )}
+
         {isLoading ? (
           <LoadingSpinner />
+
         ) : error && !filteredCountries ? (
+
           <h1 className="mt-10 text-2xl sm:text-4xl xl:text-5xl text-center font-bold tracking-tight text-gray-900 dark:text-white">
             Countries Not Found!
           </h1>
-        ) : null}
+
+        ) : filteredCountries?.length === 0 && (
+
+          <h1 className="mt-10 text-2xl sm:text-4xl xl:text-5xl text-center font-bold tracking-tight text-gray-900 dark:text-white">
+            Country Not Found!
+          </h1>
+
+          )}
+
       </div>
     </div>
   );
